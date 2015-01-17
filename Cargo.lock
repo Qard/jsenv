@@ -1,16 +1,13 @@
 [root]
-name = "ivm"
+name = "jsenv"
 version = "0.0.1"
 dependencies = [
  "commander 0.0.1",
- "curl 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "downtar 0.0.1",
- "flate2 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex_macros 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustc-serialize 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "semver 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "semverio 0.0.1",
- "tar 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
