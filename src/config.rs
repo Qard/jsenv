@@ -1,54 +1,58 @@
-use serialize::json;
 use std::io::{File,FileMode,FileAccess};
+use std::io::fs::PathExtensions;
+use serialize::json::Decoder;
+use serialize::Decodable;
+use serialize::json;
+use manager;
 
-// Automatically generate `Decodable` and `Encodable` trait implementations
+// `Decodable` and `Encodable` json config
 #[derive(Decodable, Encodable)]
-pub struct JSEnvConfigData {
+pub struct JSEnvConfig {
   pub current_dist: String,
   pub current_version: String,
 }
 
-pub struct JSEnvConfig {
-  path: Path,
-  pub data: JSEnvConfigData
-}
-
 impl JSEnvConfig {
-  pub fn load(path: String) -> JSEnvConfig {
-    let config_path = Path::new(path);
+  pub fn load (path: Path) -> JSEnvConfig {
+    if path.exists() && path.is_file() {
+      // Read file into json object
+      let mut file = File::open(&path);
+      let json_obj = json::from_reader(&mut file).unwrap();
 
-    let data = File::open(&config_path)
-      .read_to_string()
-      .unwrap();
+      // Decode json object to struct
+      let mut decoder = Decoder::new(json_obj);
+      Decodable::decode(&mut decoder)
+        .unwrap_or(JSEnvConfig {
+          current_version: "".to_string(),
+          current_dist: "".to_string()
+        })
 
-    let mut config: JSEnvConfigData = json::decode(data.as_slice())
-      .unwrap_or(JSEnvConfigData {
+    // Make empty config if one does not already exist
+    } else {
+      JSEnvConfig {
         current_version: "".to_string(),
         current_dist: "".to_string()
-      });
-
-    JSEnvConfig {
-      path: config_path,
-      data: config
+      }
     }
   }
 
   pub fn use_version (dist: String, version: String) {
-    let mut config = JSEnvConfig::load("./config.json".to_string());
-    config.data.current_version = version;
-    config.data.current_dist = dist;
+    let mut config = JSEnvConfig::load(manager::path_to("./config.json"));
+    config.current_version = version;
+    config.current_dist = dist;
   }
 }
 
+// Auto save when config goes out of scope
 impl Drop for JSEnvConfig {
   fn drop(&mut self) {
     let mut file = File::open_mode(
-      &self.path,
+      &manager::path_to("./config.json"),
       FileMode::Truncate,
       FileAccess::Write
     );
 
-    let data = json::as_pretty_json(&self.data)
+    let data = json::as_pretty_json(self)
       .indent(2);
 
     write!(&mut file, "{}", data);
