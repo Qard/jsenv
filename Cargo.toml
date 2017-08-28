@@ -1,22 +1,21 @@
 [package]
-
 name = "jsenv"
 version = "0.0.1"
 authors = ["Stephen Belanger <admin@stephenbelanger.com>"]
 
-[dependencies.downtar]
-path = "../downtar"
-
-[dependencies.semverio]
-path = "../semverio"
-
-[dependencies.commander]
-path = "../commander"
+# [dependencies.downtar]
+# path = "../rust-downtar"
+#
+# [dependencies.semverio]
+# path = "../rust-semverio"
 
 [dependencies]
-rustc-serialize = "^0.2.7"
-regex_macros = "0.1.5"
-semver = "0.1.12"
+clap = {version = "~2.19.0", features = ["yaml"]}
+serde = "*"
+serde_derive = "*"
+serde_json = "*"
+# regex_macros = "0.1.5"
+# semver = "0.1.12"
 
 # Uncomment after deps are published
 # commander = "0.0.1"

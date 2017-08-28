@@ -1,11 +1,11 @@
-use std::io::fs::PathExtensions;
-use std::path::BytesContainer;
-use std::io::fs;
+use std::path::{ Path };
+use std::fs;
 use std::os;
 
-pub fn path_to<T: BytesContainer> (dest: T) -> Path {
-  let root = os::self_exe_path().unwrap();
-  root.dir_path().join(Path::new(dest))
+pub fn path_to(dest: String) -> Path {
+    Path::new(dest)
+  // let root = os::self_exe_path().unwrap();
+  // root.dir_path().join(Path::new(dest))
 }
 
 pub fn has_version (dist: String, version: String) -> bool {
@@ -22,13 +22,13 @@ pub fn has_distribution (dist: String) -> bool {
 
 pub fn list_versions (dist: String) -> Vec<String> {
   let base = format!("./versions/{}", dist);
-  fs::readdir(&path_to(base)).unwrap().iter()
+  fs::read_dir(&path_to(base)).unwrap().iter()
     .map(|v| v.filename_str().unwrap().to_string())
     .collect()
 }
 
 pub fn list_distributions () -> Vec<String> {
-  fs::readdir(&path_to("./versions")).unwrap().iter()
+  fs::read_dir(&path_to("./versions")).unwrap().iter()
     .map(|v| v.filename_str().unwrap().to_string())
     .collect()
 }

@@ -1,12 +1,11 @@
-use std::io::{File,FileMode,FileAccess};
-use std::io::fs::PathExtensions;
-use serialize::json::Decoder;
-use serialize::Decodable;
-use serialize::json;
+use std::path::{ Path };
+use std::fs::{ File };
+
+use serde_json;
 use manager;
 
 // `Decodable` and `Encodable` json config
-#[derive(Decodable, Encodable)]
+#[derive(Serialize, Deserialize)]
 pub struct JSEnvConfig {
   pub current_dist: String,
   pub current_version: String,
@@ -16,16 +15,15 @@ impl JSEnvConfig {
   pub fn load (path: Path) -> JSEnvConfig {
     if path.exists() && path.is_file() {
       // Read file into json object
-      let mut file = File::open(&path);
-      let json_obj = json::from_reader(&mut file).unwrap();
+      let mut f = File::open(&path)?;
+      let mut buffer = String::new();
 
-      // Decode json object to struct
-      let mut decoder = Decoder::new(json_obj);
-      Decodable::decode(&mut decoder)
-        .unwrap_or(JSEnvConfig {
-          current_version: "".to_string(),
-          current_dist: "".to_string()
-        })
+      f.read_to_string(&mut buffer)?;
+
+      serde_json::from_str(&buffer).unwrap_or(JSEnvConfig {
+        current_version: "".to_string(),
+        current_dist: "".to_string()
+      })
 
     // Make empty config if one does not already exist
     } else {
@@ -46,14 +44,11 @@ impl JSEnvConfig {
 // Auto save when config goes out of scope
 impl Drop for JSEnvConfig {
   fn drop(&mut self) {
-    let mut file = File::open_mode(
-      &manager::path_to("./config.json"),
-      FileMode::Truncate,
-      FileAccess::Write
+    let mut file = File::open(
+      &manager::path_to("./config.json")
     );
 
-    let data = json::as_pretty_json(self)
-      .indent(2);
+    let data = serde_json::to_string_pretty(self).unwrap();
 
     write!(&mut file, "{}", data);
   }
