@@ -1,5 +1,7 @@
 # jsenv
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Qard/jsenv.svg)](https://greenkeeper.io/)
+
 Cross-platform JS runtime version manager.
 
 ## Install
