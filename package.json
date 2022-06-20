@@ -30,7 +30,7 @@
     "download-tarball": "^1.0.3",
     "find-up": "^2.1.0",
     "fs-readdir-promise": "^1.0.1",
-    "got": "^7.1.0",
+    "got": "^11.8.5",
     "load-json-file": "^3.0.0",
     "read-pkg": "^2.0.0",
     "stream-consume-promise": "^1.0.1",
